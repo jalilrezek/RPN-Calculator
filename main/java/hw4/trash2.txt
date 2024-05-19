@@ -1,0 +1,115 @@
+package hw4;
+import exceptions.EmptyException;
+
+import java.util.Scanner;
+
+
+/**
+ * A program for an RPN calculator that uses a stack.
+ */
+public final class Calc {
+  /**
+   * The main function.
+   *
+   * @param args Not used.
+   */
+  public static void main(String[] args) {
+
+    Scanner k = new Scanner(System.in);
+    LinkedStack<String> s = new LinkedStack<>();
+    while (true) {
+      String input = k.nextLine();
+
+      String[] inputArr = input.split(" ");
+      int numInputs = inputArr.length;
+      String[] revArr = new String[numInputs];
+
+      // construct reverse array to execute statements in order of first in, first done.
+      // since stacks are last in, first out must reverse the input array
+
+      for (int i = numInputs - 1; i >= 0; i--) {
+        revArr[i] = inputArr[numInputs - 1 - i];
+      }
+
+      String[] validNonInts = {"+", "-", "*", "/", "%", "?", ".", "!"};
+      int numValidNonInts = validNonInts.length;
+
+
+
+      // go over the line of input. Ignore any invalid strings. Save both integers and valid non-ints
+
+      try {
+
+        for (int i = 0; i < numInputs; i++) {
+          boolean foundValidNonInt = false;
+          String curr = inputArr[i];
+          // we must first check if it's a valid non-int. If we check int first, then we will throw
+          // error message even for a valid non-int.
+          for (int j = 0; j < numValidNonInts; j++) {
+            if (curr.equals(validNonInts[j])) {
+              s.push(curr); // s has all the values in reverse - so toString() will print backwards
+              foundValidNonInt = true;
+              break; // need not keep iterating
+            }
+          }
+          if (foundValidNonInt) {
+            continue; // we know it's not an integer. If we run the below, we will throw error message
+            //since it's not an integer. But this is not an error condition. So restart the loop with
+            //the next string on the input line.
+          }
+          // if we've made it here, the current string is not a valid non-integer. It could be an int,
+          // or an invalid string.
+          try {
+            int x = Integer.parseInt(curr); // the value x is not what's pushed on the stack. We simply try to make some value x to demonstrate that it's an integer.
+            System.out.println("Valid input");
+            s.push(curr); // we push the current string onto the stack.
+          } catch (NumberFormatException e) {
+            System.out.println("input is not an int value");
+          }
+        }
+
+        System.out.println("Stack upon reading input: " + s.toString());
+
+        String currStr = s.top();
+
+        if (currStr.equals("+")) {
+          String top = null;
+          String beforeTop = null;
+          try {
+            s.pop();
+            top = s.top();
+            s.pop();
+            beforeTop = s.top();
+            s.pop();
+            int x = Integer.parseInt(top) + Integer.parseInt(beforeTop);
+            String sum = Integer.toString(x);
+            s.push(sum); // can integers be pushed onto the stack?
+          } catch (EmptyException | NumberFormatException e) {
+            System.out.println("empty");
+            if (beforeTop != null) { // should only happen if beforeTop is a valid non-integer. If it's not, then it wasn't an int either from try block.
+              s.push(beforeTop); // then it must be null because we raised an EmptyException
+            }
+            if (top != null) {
+              s.push(top);
+            }
+
+          }
+        }
+
+        System.out.println("Current stack: " + s.toString());
+
+      } catch (EmptyException e) {
+        System.out.println("No valid entries provided");
+      }
+
+
+    }
+
+
+
+
+  }
+
+
+}
+

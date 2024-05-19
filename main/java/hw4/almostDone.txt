@@ -1,0 +1,217 @@
+package hw4;
+import exceptions.EmptyException;
+
+import java.util.Scanner;
+
+
+/**
+ * A program for an RPN calculator that uses a stack.
+ */
+public final class Calc {
+
+
+  public static void add(LinkedStack<Integer> s) {
+    double top = 0.5; // i need it to be accessible outside the try-catch, so I initialize it outside. But then, it must have a value which no int can assume, if I am to test whether to push it onto the stack. Hence, 0.5
+    double beforeTop = 0.5; // cuz if I use, say, 0, then I'm just testing if it's still 0 at the end. But if it was 0 to begin with, it will be "changed" to 0 and then it will fail the condtional and we can't add it.
+    try { // hence we need an initial value to test after the try-catch block which no int can have
+      top = s.top();
+      s.pop();
+      beforeTop = s.top();
+      s.pop();
+      int sum = (int) top + (int) beforeTop;
+      s.push(sum);
+    } catch (EmptyException e) {
+      System.out.println("ERROR: nothing to add");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    }
+
+  }
+
+  public static void sub(LinkedStack<Integer> s) {
+    double top = 0.5; // i need it to be accessible outside the try-catch, so I initialize it outside. But then, it must have a value which no int can assume, if I am to test whether to push it onto the stack. Hence, 0.5
+    double beforeTop = 0.5; // cuz if I use, say, 0, then I'm just testing if it's still 0 at the end. But if it was 0 to begin with, it will be "changed" to 0 and then it will fail the condtional and we can't add it.
+    try { // hence we need an initial value to test after the try-catch block which no int can have
+      top = s.top();
+      s.pop();
+      beforeTop = s.top();
+      s.pop();
+      int dif = (int) top - (int) beforeTop;
+      s.push(dif);
+    } catch (EmptyException e) {
+      System.out.println("ERROR: nothing to subtract");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    }
+
+  }
+
+  public static void multiply(LinkedStack<Integer> s) {
+    double top = 0.5;
+    double beforeTop = 0.5;
+    try {
+      top = s.top();
+      s.pop();
+      beforeTop = s.top();
+      s.pop();
+      int prod = (int) top * (int) beforeTop;
+      s.push(prod);
+    } catch (EmptyException e) {
+      System.out.println("ERROR: nothing to multiply");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    }
+
+  }
+
+
+  public static void divide(LinkedStack<Integer> s) {
+    double top = 0.5;
+    double beforeTop = 0.5;
+    try {
+      top = s.top();
+      s.pop();
+      beforeTop = s.top();
+      s.pop();
+      int quot = (int) top / (int) beforeTop;
+      s.push(quot);
+    } catch (ArithmeticException e) {
+      System.out.println("ERROR: Division by 0");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    } catch (EmptyException e) {
+      System.out.println("ERROR: nothing to divide");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    }
+
+  }
+
+  public static void mod(LinkedStack<Integer> s) {
+    double top = 0.5;
+    double beforeTop = 0.5;
+    try {
+      top = s.top();
+      s.pop();
+      beforeTop = s.top();
+      s.pop();
+      int rem = (int) top % (int) beforeTop;
+      s.push(rem);
+    } catch (ArithmeticException e) {
+      System.out.println("ERROR: Division by 0");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    } catch (EmptyException e) {
+      System.out.println("ERROR: nothing to modulo divide");
+      if (beforeTop != 0.5) { // i.e. it was modified in the try block, so it must have existed.
+        s.push((int) beforeTop);
+      }
+      if (top != 0.5) {
+        s.push((int) top);
+      }
+    }
+
+  }
+
+
+  /**
+   * The main function.
+   *
+   * @param args Not used.
+   */
+  public static void main(String[] args) {
+
+    Scanner k = new Scanner(System.in);
+
+
+
+    LinkedStack<Integer> ls = new LinkedStack<>();
+
+    while (true) {
+
+
+      boolean quit = false;
+      String line = k.nextLine();
+      Scanner l = new Scanner(line);
+
+      while(l.hasNext()) {
+        String cur = l.next();
+
+        if (cur.equals("!")) {
+          quit = true;
+          break;
+        } else if (cur.equals("+")) {
+          add(ls);
+        } else if (cur.equals("-")) {
+          sub(ls);
+        } else if (cur.equals("*")) {
+          multiply(ls);
+        } else if (cur.equals("/")) {
+          divide(ls);
+        } else if (cur.equals("%")) {
+          mod(ls);
+        } else if (cur.equals("?")) {
+          System.out.println(ls.toString());
+        } else if (cur.equals(".")) {
+          try {
+            int x = ls.top();
+            System.out.println(x);
+          } catch (EmptyException e) {
+            System.out.println("ERROR: Top is empty; nothing to display");
+          }
+        } else {
+          try {
+            int x = Integer.parseInt(cur); // the value x is not what's pushed on the stack. We simply try to make some value x to demonstrate that it's an integer.
+            System.out.println("Valid input");
+            ls.push(x); // we push the current int onto the stack.
+          } catch (NumberFormatException e) {
+            System.out.println("input is not an int value");
+          }
+        } // anything else is invalid input
+
+
+
+      }
+      System.out.println(ls.toString());
+      if (quit) {
+        break;
+      }
+
+
+    }
+
+
+
+
+
+
+
+  }
+
+
+}
+
